@@ -20,21 +20,45 @@ import Glibc
 
 import Foundation
 
-private let pt_entry: @convention(c) (UnsafeMutablePointer<Void>) -> UnsafeMutablePointer<Void> = { (ctx) in
-    let np = UnsafeMutablePointer<()->()>(ctx)
-    np.memory()
-    np.destroy()
-    np.dealloc(1)
-    return nil
+private class StrandClosure {
+    let closure: () -> Void
+    
+    init(closure: @escaping () -> Void) {
+        self.closure = closure
+    }
 }
 
+#if os(Linux)
+    private func runner(arg: UnsafeMutablePointer<Void>?) -> UnsafeMutablePointer<Void>? {
+        guard let arg = arg else { return nil }
+        let unmanaged = Unmanaged<StrandClosure>.fromOpaque(arg)
+        unmanaged.takeUnretainedValue().closure()
+        unmanaged.release()
+        return nil
+    }
+#else
+    private func runner(arg: UnsafeMutableRawPointer) -> UnsafeMutableRawPointer? {
+        let unmanaged = Unmanaged<StrandClosure>.fromOpaque(arg)
+        unmanaged.takeUnretainedValue().closure()
+        unmanaged.release()
+        return nil
+    }
+#endif
+
 /// A `dispatch` statement starts the execution of an action as an independent concurrent thread of control within the same address space.
-public func dispatch(action: ()->()){
-    let p = UnsafeMutablePointer<()->()>.alloc(1)
-    p.initialize(action)
-    var t : pthread_t = nil
-    pthread_create(&t, nil, pt_entry, p)
-    pthread_detach(t)
+public func dispatch(_ action: @escaping () -> Void){
+    let holder = Unmanaged.passRetained(StrandClosure(closure: action))
+    let pointer = UnsafeMutableRawPointer(holder.toOpaque())
+    #if os(Linux)
+        var t : pthread_t = 0
+        pthread_create(&t, nil, runner, pointer)
+        pthread_detach(t)
+    #else
+        var pt : pthread_t?
+        pthread_create(&pt, nil, runner, pointer)
+        pthread_detach(pt!)
+    #endif
+
 }
 
 

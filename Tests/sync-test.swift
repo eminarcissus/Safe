@@ -8,7 +8,7 @@
 
 import XCTest
 
-func now() -> NSTimeInterval {
+func now() -> TimeInterval {
     return NSDate().timeIntervalSince1970
 }
 func makeTotal(count: Int) -> Int {
@@ -26,7 +26,7 @@ extension Tests {
     /// WaitGroup testing
     func _testWaitGroup(count: Int, individualAdds: Bool){
         let total = IntA(0)
-        let xtotal = makeTotal(count)
+        let xtotal = makeTotal(count: count)
 
         let wg = WaitGroup()
         if !individualAdds {
@@ -49,23 +49,23 @@ extension Tests {
         XCTAssert(xtotal == total, "The expected total is incorrect. xtotal: \(xtotal), total: \(total)")
     }
     func testWaitGroupZero() {
-        _testWaitGroup(0, individualAdds: false)
+        _testWaitGroup(count: 0, individualAdds: false)
     }
     func testWaitGroupTen() {
-        _testWaitGroup(10, individualAdds: false)
+        _testWaitGroup(count: 10, individualAdds: false)
     }
     func testWaitGroupHundred() {
-        _testWaitGroup(100, individualAdds: false)
+        _testWaitGroup(count: 100, individualAdds: false)
     }
     func testWaitGroupIndividualAdds() {
-        _testWaitGroup(100, individualAdds: true)
+        _testWaitGroup(count: 100, individualAdds: true)
     }
     
     #if !os(Linux)
     // Cannot test on linux because assertionFailure is not recoverable.
     func testWaitGroupNegative() {
         let ex = _try({
-            self._testWaitGroup(-100, individualAdds: false)
+            self._testWaitGroup(count: -100, individualAdds: false)
         })
         XCTAssert(ex != nil, "Negative WaitGroup should fail.")
     }
@@ -102,7 +102,7 @@ extension Tests {
     func testMutexDispatch() {
         let count = 100
         var total = 0
-        let xtotal = makeTotal(count)
+        let xtotal = makeTotal(count: count)
 
         let wg = WaitGroup()
         let mutex = Mutex()
@@ -152,7 +152,7 @@ extension Tests {
     func _testCondBroadcast(count: Int) {
         var done = false
         let total = IntA(0)
-        let xtotal = makeTotal(count)
+        let xtotal = makeTotal(count: count)
         let cond = Cond(Mutex())
         let wg = WaitGroup()
         
@@ -184,21 +184,21 @@ extension Tests {
     func testCondBroadcastZero() {
         var i = 0;
         while i < 50 {
-            _testCondBroadcast(0)
+            _testCondBroadcast(count: 0)
             i += 1
         }
     }
     func testCondBroadcastTen() {
         var i = 0
         while i < 50 {
-            _testCondBroadcast(10)
+            _testCondBroadcast(count: 10)
             i += 1
         }
     }
     func testCondBroadcastHundred() {
         var i = 0
         while i < 50 {
-            _testCondBroadcast(100)
+            _testCondBroadcast(count: 100)
             i += 1
         }
     }

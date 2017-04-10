@@ -1478,7 +1478,7 @@ extension Tests {
         }
         do {
             var (n, a) = (Double(47), DoubleA(47))
-            n = n % 2
+            n = n.truncatingRemainder(dividingBy: 2)
             a = a % 2
             XCTAssert(n == a, "Mismatch")
         }
@@ -1524,7 +1524,7 @@ extension Tests {
         }
         do {
             var (n, a) = (Double(47), DoubleA(47))
-            n %= 2
+            n = n.truncatingRemainder(dividingBy: 2)
             a %= 2
             XCTAssert(n == a, "Mismatch")
         }
@@ -1559,7 +1559,7 @@ extension Tests {
         }
         do {
             var (n, a) = (Float(47), FloatA(47))
-            n = n % 2
+            n = n.truncatingRemainder(dividingBy:  2)
             a = a % 2
             XCTAssert(n == a, "Mismatch")
         }
@@ -1605,7 +1605,7 @@ extension Tests {
         }
         do {
             var (n, a) = (Float(47), FloatA(47))
-            n %= 2
+            n = n.truncatingRemainder(dividingBy: 2)
             a %= 2
             XCTAssert(n == a, "Mismatch")
         }
@@ -1621,15 +1621,15 @@ extension Tests {
     func testAtomicString() {
         do {
             var (n, a) = (String("47"), StringA("47"))
-            n = n + "2"
+            n = n! + "2"
             a = a + "2"
-            XCTAssert(n == a, "Mismatch")
+            XCTAssert(n! == a, "Mismatch")
         }
         do {
             var (n, a) = (String("47"), StringA("47"))
-            n += "2"
+            n = n! + "2"
             a += "2"
-            XCTAssert(n == a, "Mismatch")
+            XCTAssert(n! == a, "Mismatch")
         }
 
     }

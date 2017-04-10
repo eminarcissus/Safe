@@ -12,7 +12,7 @@ import XCTest
 extension Tests {
     func _testDispatch(count: Int){
         var total = 0
-        let xtotal = makeTotal(count)
+        let xtotal = makeTotal(count: count)
         let wg = WaitGroup()
         let mutex = Mutex()
         wg.add(count)
@@ -30,9 +30,9 @@ extension Tests {
         XCTAssert(xtotal == total, "The expected total is incorrect.")
     }
     func testDispatchTen() {
-        _testDispatch(10)
+        _testDispatch(count: 10)
     }
     func testDispatchHundred() {
-        _testDispatch(100)
+        _testDispatch(count: 100)
     }
 }

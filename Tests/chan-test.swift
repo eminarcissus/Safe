@@ -13,10 +13,10 @@ extension Tests {
     func testChanUnbuffered() {
         let count = 100
         let total = IntA(0)
-        let xtotal = makeTotal(count)
+        let xtotal = makeTotal(count: count)
         let nums = Chan<Int>()
         dispatch {
-            NSThread.sleepForTimeInterval(0.05)
+            Thread.sleep(forTimeInterval: 0.05)
             while let i = <-nums {
                 total += i
             }
@@ -32,11 +32,11 @@ extension Tests {
     func testChanBuffered() {
         let count = 100
         let total = IntA(0)
-        let xtotal = makeTotal(count)
+        let xtotal = makeTotal(count: count)
         let nums = Chan<Int>(10)
         let done = Chan<Bool>()
         dispatch {
-            NSThread.sleepForTimeInterval(0.05)
+            Thread.sleep(forTimeInterval: 0.05)
             while let i = <-nums {
                 total += i
             }
@@ -54,11 +54,11 @@ extension Tests {
     func testChanSelect() {
         let count = 100
         let total = IntA(0)
-        let xtotal = makeTotal(count)
+        let xtotal = makeTotal(count: count)
         let nums = Chan<Int>(10)
         let done = Chan<Bool>()
         dispatch {
-            NSThread.sleepForTimeInterval(0.05)
+            Thread.sleep(forTimeInterval: 0.05)
             var chanOpened = true
             while chanOpened {
                 _select {
@@ -85,12 +85,12 @@ extension Tests {
         let count = 100
         let total = IntA(0)
         let total2 = IntA(0)
-        let xtotal = makeTotal(count)
+        let xtotal = makeTotal(count: count)
         let nums = Chan<Int>(10)
         let nums2 = Chan<Int>()
         let done = Chan<Bool>()
         dispatch {
-            NSThread.sleepForTimeInterval(0.05)
+            Thread.sleep(forTimeInterval: 0.05)
             var chanOpened = true
             var chanOpened2 = true
             while chanOpened || chanOpened2 {
@@ -129,12 +129,12 @@ extension Tests {
         let total = IntA(0)
         let total2 = IntA(0)
         let defaultUsed = BoolA(false)
-        let xtotal = makeTotal(count)
+        let xtotal = makeTotal(count: count)
         let nums = Chan<Int>(10)
         let nums2 = Chan<Int>()
         let done = Chan<Bool>()
         dispatch {
-            NSThread.sleepForTimeInterval(0.05)
+            Thread.sleep(forTimeInterval: 0.05)
             var chanOpened = true
             var chanOpened2 = true
             while chanOpened || chanOpened2 {
@@ -154,8 +154,8 @@ extension Tests {
                         }
                     }
                     _default {
-                        NSThread.sleepForTimeInterval(0.05)
-                        defaultUsed.store(true)
+                        Thread.sleep(forTimeInterval: 0.05)
+                        defaultUsed.store(value: true)
                     }
                 }
             }
@@ -165,7 +165,7 @@ extension Tests {
             nums <- i
             nums2 <- i
         }
-        NSThread.sleepForTimeInterval(0.05)
+        Thread.sleep(forTimeInterval: 0.05)
         nums.close()
         nums2.close()
         <-done
